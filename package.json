@@ -62,5 +62,8 @@
       "**/hardhat",
       "**/hardhat/**"
     ]
+  },
+  "dependencies": {
+    "abdk-libraries-solidity": "^3.0.0"
   }
 }
