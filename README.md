@@ -1,16 +1,16 @@
-# 🏗 Scaffold-ETH - 🎟 Simple NFT Example
+# 🏗 Scaffold-ETH - 🎟 nft-lending-auction
 
-> Build, mint, and send around your own ERC721!
+> NFT Collateralized Loans!
 
 # 🏃‍♀️ Quick Start
 Required: [Node](https://nodejs.org/dist/latest-v12.x/) plus [Yarn](https://classic.yarnpkg.com/en/docs/install/#mac-stable) and [Git](https://git-scm.com/downloads)
 
 ```
-git clone https://github.com/austintgriffith/scaffold-eth.git simple-nft-example
+git clone https://github.com/austintgriffith/scaffold-eth.git nft-lending-auction
 ```
 ```
-cd simple-nft-example
-git checkout simple-nft-example
+cd nft-lending-auction
+git checkout nft-lending-auction
 yarn install
 yarn start
 ```
@@ -18,14 +18,14 @@ yarn start
 > in a second terminal window:
 
 ```
-cd simple-nft-example
+cd nft-lending-auction
 yarn chain
 ```
 
 > in a third terminal window:
 
 ```
-cd simple-nft-example
+cd nft-lending-auction
 yarn deploy
 ```
 
@@ -50,6 +50,8 @@ yarn mint
 ⛽️ Grab some gas for each account using the faucet:
 
 ![nft4](https://user-images.githubusercontent.com/526558/124387005-55b34200-dcb3-11eb-8565-1ee40b5634ad.png)
+
+---------------- Further documentation needed --------------------
 
 🎟 Send an NFT to the incognito window address:
 
