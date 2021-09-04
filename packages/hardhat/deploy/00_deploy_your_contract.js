@@ -9,7 +9,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // args: ["Hello"],
     log: true,
   });
-
+  await deploy("PawnBank", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    // args: ["Hello"],
+    log: true,
+  });
   /*
     // Getting a previously deployed contract
     const YourContract = await ethers.getContract("YourContract", deployer);

@@ -91,7 +91,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
         );
       }
     }
-
+    
     return (
       <div style={{ margin: 2 }} key={key}>
         <Input

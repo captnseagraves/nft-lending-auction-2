@@ -437,6 +437,26 @@ function App(props) {
               YourCollectibles
             </Link>
           </Menu.Item>
+          {/* <Menu.Item key="/your-collectible">
+            <Link
+              onClick={() => {
+                setRoute("/your-collectible");
+              }}
+              to="/your-collectible"
+            >
+              yourCollectibleContract
+            </Link>
+          </Menu.Item> */}
+          <Menu.Item key="/lending-auction">
+            <Link
+              onClick={() => {
+                setRoute("/lending-auction");
+              }}
+              to="/lending-auction"
+            >
+              Lending Auction
+            </Link>
+          </Menu.Item>
           <Menu.Item key="/transfers">
             <Link
               onClick={() => {
@@ -540,7 +560,24 @@ function App(props) {
               />
             </div>
           </Route>
-
+          <Route path="/lending-auction">
+          <Contract
+              name="PawnBank"
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
+          <Route path="/your-collectible">
+          <Contract
+              name="YourCollectible"
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
           <Route path="/transfers">
             <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <List
