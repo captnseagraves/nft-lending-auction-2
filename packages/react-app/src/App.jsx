@@ -447,6 +447,16 @@ function App(props) {
               yourCollectibleContract
             </Link>
           </Menu.Item> */}
+          <Menu.Item key="/pawn-bank">
+            <Link
+              onClick={() => {
+                setRoute("/pawn-bank");
+              }}
+              to="/pawn-bank"
+            >
+              Pawn Bank
+            </Link>
+          </Menu.Item>
           <Menu.Item key="/lending-auction">
             <Link
               onClick={() => {
@@ -560,9 +570,18 @@ function App(props) {
               />
             </div>
           </Route>
-          <Route path="/lending-auction">
+          <Route path="/pawn-bank">
           <Contract
               name="PawnBank"
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
+          <Route path="/lending-auction">
+          <Contract
+              name="LendingAuction"
               signer={userSigner}
               provider={localProvider}
               address={address}
