@@ -9,7 +9,7 @@ import tryToDisplay from "./utils";
 
 const { utils, BigNumber } = require("ethers");
 
-export default function FunctionForm({ contractFunction, functionInfo, provider, gasPrice, triggerRefresh }) {
+export default function FunctionForm({ contractFunction, functionInfo, provider, gasPrice, triggerRefresh, last4OfAddress }) {
   const [form, setForm] = useState({});
   const [txValue, setTxValue] = useState();
   const [returnValue, setReturnValue] = useState();
@@ -18,7 +18,9 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
 
   let inputIndex = 0;
   const inputs = functionInfo.inputs.map(input => {
-    const key = functionInfo.name + "_" + input.name + "_" + input.type + "_" + inputIndex++;
+    const key = last4OfAddress + functionInfo.name + "_" + input.name + "_" + input.type + "_" + inputIndex++;
+
+    console.log("here", functionInfo)
 
     let buttons = "";
     if (input.type === "bytes32") {
@@ -91,7 +93,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
         );
       }
     }
-    
+
     return (
       <div style={{ margin: 2 }} key={key}>
         <Input
