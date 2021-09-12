@@ -73,11 +73,14 @@ export default function Contract({
     () =>
       contract
         ? Object.values(contract.interface.functions).filter(
+          // I think this is where an additional component is being added to the function form array
             fn => fn.type === "function" && !(show && show.indexOf(fn.name) < 0),
           )
         : [],
     [contract, show],
   );
+
+  console.log("functionForm", displayedContractFunctions)
 
   const [refreshRequired, triggerRefresh] = useState(false);
   const contractDisplay = displayedContractFunctions.map(fn => {

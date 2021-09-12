@@ -12,7 +12,7 @@ const { utils, BigNumber } = require("ethers");
 export default function FunctionForm({ contractFunction, functionInfo, provider, gasPrice, triggerRefresh, last4OfAddress }) {
   const [form, setForm] = useState({});
   const [txValue, setTxValue] = useState();
-  const [returnValue, setReturnValue] = useState();
+  const [returnValue, setReturnValue] = useState(); 
 
   const tx = Transactor(provider, gasPrice);
 

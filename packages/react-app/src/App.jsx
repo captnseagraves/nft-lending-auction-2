@@ -588,15 +588,6 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
           </Route>
-          <Route path="/your-collectible">
-          <Contract
-              name="YourCollectible"
-              signer={userSigner}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-          </Route>
           <Route path="/transfers">
             <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <List
