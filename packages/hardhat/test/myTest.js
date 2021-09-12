@@ -1,6 +1,7 @@
 const { ethers } = require("hardhat");
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
+const dayjs = require('dayjs')
 const ipfsAPI = require('ipfs-http-client');
 const ipfs = ipfsAPI({host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
@@ -12,6 +13,7 @@ describe("Lending Auctions",function () {
   let owner2 = ""
   let yourCollectible = {}
   let lendingAuction = {}
+  let now = dayjs()
 
   describe("Deploy contracts and assign state variables", function () {
       console.log("here 2")
@@ -78,5 +80,21 @@ describe("Lending Auctions",function () {
       });
     });
 
+
+    describe("Lending Auction tests", function () {
+      it("Should create a new loan", async function () {
+
+        const newLoan = await lendingAuction.createLoan(
+          yourCollectible.address,
+          1,
+          1,
+          1,
+          now.unix()
+        )
+        
+        expect(newLoan).to.exist;
+
+      });
+    });
     
 });
