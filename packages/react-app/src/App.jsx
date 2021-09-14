@@ -9,6 +9,7 @@ import "./App.css";
 import { Account, Address, AddressInput, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
 import {INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
+import { ExampleUI} from "./views";
 import {
   useBalance,
   useContractLoader,
@@ -437,26 +438,6 @@ function App(props) {
               YourCollectibles
             </Link>
           </Menu.Item>
-          {/* <Menu.Item key="/your-collectible">
-            <Link
-              onClick={() => {
-                setRoute("/your-collectible");
-              }}
-              to="/your-collectible"
-            >
-              yourCollectibleContract
-            </Link>
-          </Menu.Item> */}
-          <Menu.Item key="/pawn-bank">
-            <Link
-              onClick={() => {
-                setRoute("/pawn-bank");
-              }}
-              to="/pawn-bank"
-            >
-              Pawn Bank
-            </Link>
-          </Menu.Item>
           <Menu.Item key="/lending-auction">
             <Link
               onClick={() => {
@@ -464,7 +445,17 @@ function App(props) {
               }}
               to="/lending-auction"
             >
-              Lending Auction
+              Lending Auction Functions
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/exampleui">
+            <Link
+              onClick={() => {
+                setRoute("/exampleui");
+              }}
+              to="/exampleui"
+            >
+              ExampleUI
             </Link>
           </Menu.Item>
           <Menu.Item key="/transfers">
@@ -586,6 +577,19 @@ function App(props) {
               provider={localProvider}
               address={address}
               blockExplorer={blockExplorer}
+            />
+          </Route>
+          <Route path="/exampleui">
+            <ExampleUI
+              address={address}
+              userSigner={userSigner}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
             />
           </Route>
           <Route path="/transfers">
