@@ -63,11 +63,9 @@ export default function Contract({
     contract = customContract;
   }
 
-  console.log("contracts", contracts)
 
   const address = contract ? contract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
-  const last4OfAddress = address ? address.slice(-4) : "";
 
   const displayedContractFunctions = useMemo(
     () =>
@@ -80,15 +78,13 @@ export default function Contract({
     [contract, show],
   );
 
-  console.log("functionForm", displayedContractFunctions)
-
   const [refreshRequired, triggerRefresh] = useState(false);
   const contractDisplay = displayedContractFunctions.map(fn => {
     if (isQueryable(fn)) {
       // If there are no inputs, just display return value
       return (
         <DisplayVariable
-          key={fn.name + last4OfAddress}
+          key={fn.name}
           contractFunction={contract[fn.name]}
           functionInfo={fn}
           refreshRequired={refreshRequired}
@@ -99,7 +95,7 @@ export default function Contract({
     // If there are inputs, display a form to allow users to provide these
     return (
       <FunctionForm
-        key={"FF" + fn.name + last4OfAddress}
+        key={"FF" + fn.name}
         contractFunction={
           fn.stateMutability === "view" || fn.stateMutability === "pure"
             ? contract[fn.name]
@@ -109,7 +105,6 @@ export default function Contract({
         provider={provider}
         gasPrice={gasPrice}
         triggerRefresh={triggerRefresh}
-        last4OfAddress={last4OfAddress}
       />
     );
   });

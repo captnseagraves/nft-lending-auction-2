@@ -82,8 +82,7 @@ contract LendingAuction{
         console.log("_maxLoanAmount", _maxLoanAmount);
         console.log("_loanCompleteTime", _loanCompleteTime);
         console.log("numLoans", numLoans);
-
-
+        console.log("msg.sender", msg.sender);
 
         // // Enforce creating future-dated loan
         require(_loanCompleteTime > block.timestamp, "Can't create loan in past");
@@ -91,7 +90,8 @@ contract LendingAuction{
         // NFT id and increment numLoans
         uint256 loanId = ++numLoans;
 
-        // // Transfer NFT from owner to contract
+        // This is weird. A user has to approve first? why not just let them transfer the 721?
+        // Transfer NFT from owner to contract
         IERC721(_tokenAddress).transferFrom(msg.sender, address(this), _tokenId);
 
         // Create loan

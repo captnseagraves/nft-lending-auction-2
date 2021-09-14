@@ -25,11 +25,11 @@ export default function ExampleUI({
   const [maxLoanAmount, setMaxLoanAmount] = useState("");
   const [loanCompleteTime, setLoanCompleteTime] = useState("");
 
-  console.log("NFTAddress", typeof NFTAddress)
-  console.log("NFTID", typeof NFTID)
-  console.log("loanInterestRate", typeof loanInterestRate)
-  console.log("maxLoanAmount", typeof maxLoanAmount)
-  console.log("loanCompleteTime", typeof loanCompleteTime)
+  console.log("NFTAddress", NFTAddress)
+  console.log("NFTID", NFTID)
+  console.log("loanInterestRate", loanInterestRate)
+  console.log("maxLoanAmount", maxLoanAmount)
+  console.log("loanCompleteTime", loanCompleteTime)
 
   return (
     <div>
@@ -37,10 +37,9 @@ export default function ExampleUI({
         ⚙️ Here is an example UI that displays and sets the purpose in your smart contract:
       */}
       <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
-        <h2>Example UI:</h2>
-        <h4>purpose: {purpose}</h4>
+        <h2>NFT Lending Auction House</h2>
         <Divider />
-        <h4>Create an NFT lending auction</h4>
+        <h4>Create your NFT lending auction</h4>
         <div style={{ margin: 8 }}>
           <Input
             placeholder="NFT address"
