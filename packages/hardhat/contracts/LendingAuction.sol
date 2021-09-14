@@ -155,4 +155,172 @@ contract LendingAuction{
     return loan.historicInterest + calculateInterestAccrued(_loanId, _future);
   }
 
+/**
+   * Helper: Calculate required capital to repay loan
+   * @param _loanId PawnLoan id
+   * @param _future allows calculating require payment in future
+   * @return required loan repayment in Ether
+   */
+  function calculateRequiredRepayment(uint256 _loanId, uint256 _future)
+    public
+    view
+    returns (uint256)
+  {
+    Loan memory loan = loans[_loanId];
+
+    // amount withdrawn + total interest to be paid
+    return loan.loanAmountDrawn + calculateTotalInterest(_loanId, _future);
+  }
+
+/**
+   * Enables a lender/bidder to underwrite a loan, given it is the top bid
+   * @param _loanId id of loan to underwrite
+   * @dev Requires an unpaid loan, where currentBid < newBid <= maxBid
+   */
+  function underwriteLoan(uint256 _loanId) external payable {
+    Loan storage loan = loans[_loanId];
+    // Prevent underwriting with 0 value
+    require(msg.value > 0, "Can't underwrite with 0 Ether.");
+    // Prevent underwriting a repaid loan
+    require(loan.tokenOwner != address(0), "Can't underwrite a repaid loan.");
+    // Prevent underwriting an expired loan
+    require(loan.loanCompleteTime >= block.timestamp, "Can't underwrite expired loan.");
+
+    // If loan has a previous bid:
+    if (loan.firstBidTime != 0) {
+      // Historic interest paid to previous top bidders + accrued interest to current bidder
+      // As of current block (future = 0 seconds)
+      uint256 _totalInterest = calculateTotalInterest(_loanId, 0);
+      // Calculate total payout for previous bidder
+      uint256 _bidPayout = loan.loanAmount + _totalInterest;
+
+      // Prevent underwriting a loan with value < required payout
+      require(_bidPayout < msg.value, "Can't underwrite < top lender.");
+      // Prevent underwriting a loan with value greater than max bid + pending interest
+      require(loan.maxLoanAmount + _totalInterest >= msg.value, "Can't underwrite > max loan.");
+
+      // Buyout current top bidder
+      (bool sent, ) = payable(loan.lender).call{value: _bidPayout}("");
+      require(sent == true, "Failed to buyout top bidder.");
+
+      // Increment historic paid interest
+      loan.historicInterest += _totalInterest;
+      // Update new loan amount
+      loan.loanAmount = msg.value - _totalInterest;
+    } else {
+      // Prevent underwriting a loan with value greater than max bid
+      require(loan.maxLoanAmount >= msg.value, "Can't underwrite > max loan.");
+      // If loan doesn't have a previous bid (to buyout), set first bid time
+      loan.firstBidTime = block.timestamp;
+      // Update new loan amount
+      loan.loanAmount = msg.value;
+    }
+
+    // Update new lender address
+    loan.lender = msg.sender;
+    // Update last bid time
+    loan.lastBidTime = block.timestamp;
+
+    // Emit new underwriting event
+    emit LoanUnderwritten(_loanId, msg.sender);
+  }
+
+  /**
+   * Enables NFT owner to draw capital from top bid
+   * @param _loanId id of loan to draw from
+   */
+  function drawLoan(uint256 _loanId) external {
+    Loan storage loan = loans[_loanId];
+    // Prevent non-loan-owner from drawing
+    require(loan.tokenOwner == msg.sender, "Must be NFT owner to draw.");
+    // Prevent drawing from a loan with 0 available capital
+    require(loan.loanAmountDrawn < loan.loanAmount, "Max draw capacity reached.");
+
+    // Calculate capital to draw
+    uint256 _availableCapital = loan.loanAmount - loan.loanAmountDrawn;
+    // Update drawn amount to current loan capacity
+    loan.loanAmountDrawn = loan.loanAmount;
+    // Draw the maximum available loan capital
+    (bool sent, ) = payable(msg.sender).call{value: _availableCapital}("");
+    require(sent, "Failed to draw capital.");
+
+    // Emit draw event
+    emit LoanDrawn(_loanId);
+  }
+
+/**
+   * Enables anyone to repay a loan on behalf of owner
+   * @param _loanId id of loan to repay
+   */
+  function repayLoan(uint256 _loanId) external payable {
+    Loan storage loan = loans[_loanId];
+    // Prevent repaying repaid loan
+    require(loan.tokenOwner != address(0), "Can't repay paid loan.");
+    // Prevent repaying loan without bids
+    require(loan.firstBidTime != 0, "Can't repay loan with 0 bids.");
+    // Prevent repaying loan after expiry
+    require(loan.loanCompleteTime >= block.timestamp, "Can't repay expired loan.");
+
+    // Add historic interest paid to previous top bidders + accrued interest to top bidder
+    // As of current block (future = 0 seconds)
+    uint256 _totalInterest = calculateTotalInterest(_loanId, 0);
+    // Calculate additional capital required to process payout
+    uint256 _additionalCapital = loan.loanAmountDrawn + _totalInterest;
+    // Enforce additional required capital is passed to contract
+    require(msg.value >= _additionalCapital, "Insufficient repayment.");
+
+    // Payout current top bidder (loan amount + total pending interest)
+    (bool sent, ) = payable(loan.lender).call{value: (loan.loanAmount + _totalInterest)}("");
+    require(sent, "Failed to repay loan.");
+
+    // Transfer NFT back to owner
+    IERC721(loan.tokenAddress).transferFrom(address(this), loan.tokenOwner, loan.tokenId);
+
+    // Toggle loan repayment (nullify tokenOwner)
+    loan.tokenOwner = address(0);
+
+    // Emit repayment event
+    emit LoanRepayed(_loanId, loan.lender, msg.sender);
+  }
+
+  /**
+   * Enables owner to cancel loan
+   * @param _loanId id of loan to cancel
+   * @dev requires no active bids to be placed (else, use repay)
+   */
+  function cancelLoan(uint256 _loanId) external {
+    Loan storage loan = loans[_loanId];
+    // Enforce loan ownership
+    require(loan.tokenOwner == msg.sender, "Must be NFT owner to cancel.");
+    // Enforce loan has no bids
+    require(loan.firstBidTime == 0, "Can't cancel loan with >0 bids.");
+
+    // Return NFT to owner
+    IERC721(loan.tokenAddress).transferFrom(address(this), msg.sender, loan.tokenId);
+
+    // Nullify loan
+    loan.tokenOwner = address(0);
+
+    // Emit cancelleation event
+    emit LoanCancelled(_loanId);
+  }
+
+/**
+   * Enables anyone to seize NFT, for lender, on loan default
+   * @param _loanId id of loan to seize collateral
+   */
+  function seizeNFT(uint256 _loanId) external {
+    Loan memory loan = loans[_loanId];
+    // Enforce loan is unpaid
+    require(loan.tokenOwner != address(0), "Can't seize from repaid loan.");
+    // Enforce loan is expired
+    require(loan.loanCompleteTime < block.timestamp, "Can't seize before expiry.");
+
+    // Transfer NFT to lender
+    IERC721(loan.tokenAddress).transferFrom(address(this), loan.lender, loan.tokenId);
+
+    // Emit seize event
+    emit LoanSeized(_loanId, loan.lender, msg.sender);
+  }
+
 }
