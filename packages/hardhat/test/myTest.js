@@ -91,8 +91,11 @@ describe("Lending Auctions",function () {
           1,
           now.unix()
         )
-        
-        expect(newLoan).to.exist;
+
+        let numLoansHex = await lendingAuction.numLoans()
+        let numLoans = numLoansHex.toNUmber()
+
+        expect(numLoans).to.equal(1);
 
       });
     });
