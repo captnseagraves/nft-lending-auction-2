@@ -9,7 +9,7 @@ import "./App.css";
 import { Account, Address, AddressInput, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
 import {INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { ExampleUI} from "./views";
+import { ExampleUI, OpenAuctions, YourLoans} from "./views";
 import {
   useBalance,
   useContractLoader,
@@ -455,7 +455,27 @@ function App(props) {
               }}
               to="/exampleui"
             >
-              ExampleUI
+              Lending Auction Home
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/your-loans">
+            <Link
+              onClick={() => {
+                setRoute("/your-loans");
+              }}
+              to="/your-loans"
+            >
+              Your Loans
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/open-auctions">
+            <Link
+              onClick={() => {
+                setRoute("/open-auctions");
+              }}
+              to="/open-auctions"
+            >
+              Open Auctions
             </Link>
           </Menu.Item>
           <Menu.Item key="/transfers">
@@ -466,26 +486,6 @@ function App(props) {
               to="/transfers"
             >
               Transfers
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsup">
-            <Link
-              onClick={() => {
-                setRoute("/ipfsup");
-              }}
-              to="/ipfsup"
-            >
-              IPFS Upload
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsdown">
-            <Link
-              onClick={() => {
-                setRoute("/ipfsdown");
-              }}
-              to="/ipfsdown"
-            >
-              IPFS Download
             </Link>
           </Menu.Item>
           <Menu.Item key="/debugcontracts">
@@ -581,6 +581,32 @@ function App(props) {
           </Route>
           <Route path="/exampleui">
             <ExampleUI
+              address={address}
+              userSigner={userSigner}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+            />
+          </Route>
+          <Route path="/your-loans">
+            <YourLoans
+              address={address}
+              userSigner={userSigner}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+            />
+          </Route>
+          <Route path="/open-auctions">
+            <OpenAuctions
               address={address}
               userSigner={userSigner}
               mainnetProvider={mainnetProvider}
