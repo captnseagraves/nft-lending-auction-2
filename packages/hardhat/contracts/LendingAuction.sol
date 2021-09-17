@@ -69,6 +69,17 @@ contract LendingAuction{
 
     // ============ Functions ============
 
+
+/**
+   * Enables an NFT owner to create a loan auction, specifying inital ask parameters
+   * @param _tokenAddress NFT token address
+   * @param _tokenId NFT token id
+   * @param _interestRate percentage fixed interest rate for period
+   * @param _maxLoanAmount maximum allowed Ether bid
+   * @param _loanCompleteTime time of loan completion
+   * @return Loan id
+   */
+
     function createLoan(
         address _tokenAddress,
         uint256 _tokenId,
@@ -322,5 +333,9 @@ contract LendingAuction{
     // Emit seize event
     emit LoanSeized(_loanId, loan.lender, msg.sender);
   }
+
+  // should implement:
+  // - get loan by id
+  //    - Should query chain or use subgraph?
 
 }
