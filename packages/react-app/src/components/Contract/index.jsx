@@ -63,6 +63,7 @@ export default function Contract({
     contract = customContract;
   }
 
+
   const address = contract ? contract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
 
@@ -70,6 +71,7 @@ export default function Contract({
     () =>
       contract
         ? Object.values(contract.interface.functions).filter(
+          // I think this is where an additional component is being added to the function form array
             fn => fn.type === "function" && !(show && show.indexOf(fn.name) < 0),
           )
         : [],

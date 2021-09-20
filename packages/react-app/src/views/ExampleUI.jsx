@@ -2,9 +2,10 @@
 
 import { SyncOutlined } from "@ant-design/icons";
 import { utils } from "ethers";
-import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin, Switch } from "antd";
+import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin, Switch, Space } from "antd";
 import React, { useState } from "react";
-import { Address, Balance } from "../components";
+import { Address, Balance, EtherInput } from "../components";
+import moment from 'moment';
 
 export default function ExampleUI({
   purpose,
@@ -18,7 +19,15 @@ export default function ExampleUI({
   readContracts,
   writeContracts,
 }) {
-  const [newPurpose, setNewPurpose] = useState("loading...");
+  const [NFTAddress, setNFTAddress] = useState("");
+  const [NFTID, setNFTID] = useState("");
+  const [loanInterestRate, setLoanInterestRate] = useState("");
+  const [maxLoanAmount, setMaxLoanAmount] = useState("");
+  const [loanCompleteTime, setLoanCompleteTime] = useState("");
+  const [loanID, setLoanID] = useState("");
+  const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
+
+  console.log("NFTAddress", NFTAddress)
 
   return (
     <div>
@@ -26,21 +35,57 @@ export default function ExampleUI({
         ⚙️ Here is an example UI that displays and sets the purpose in your smart contract:
       */}
       <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
-        <h2>Example UI:</h2>
-        <h4>purpose: {purpose}</h4>
+        <h2>NFT Lending Auction House</h2>
         <Divider />
+        <h4>Create your NFT lending auction</h4>
         <div style={{ margin: 8 }}>
           <Input
+            placeholder="NFT address"
             onChange={e => {
-              setNewPurpose(e.target.value);
+              setNFTAddress(e.target.value);
             }}
           />
+          <Input
+            placeholder="NFT ID"
+            onChange={e => {
+              setNFTID(e.target.value);
+            }}
+          />
+          <Input
+            placeholder="Interest Rate %"
+            onChange={e => {
+              setLoanInterestRate(e.target.value);
+            }}
+          />
+          <Input
+            placeholder="Max Loan Amount in ETH"
+            onChange={e => {
+              setMaxLoanAmount(e.target.value);
+            }}
+          />
+          
+          <Space direction="vertical" size={12}>
+            <DatePicker 
+              showTime 
+              onOk={ value => {
+                let timestamp = moment(value._d).unix()
+                setLoanCompleteTime(timestamp);
+                }} 
+            /> 
+          </Space>
+          <br />
           <Button
             style={{ marginTop: 8 }}
             onClick={async () => {
               /* look how you call setPurpose on your contract: */
               /* notice how you pass a call back for tx updates too */
-              const result = tx(writeContracts.YourContract.setPurpose(newPurpose), update => {
+              const result = tx(writeContracts.LendingAuction.createLoan(
+                NFTAddress, 
+                Number(NFTID), 
+                Number(loanInterestRate), 
+                Number(maxLoanAmount), 
+                loanCompleteTime
+                ), update => {
                 console.log("📡 Transaction Update:", update);
                 if (update && (update.status === "confirmed" || update.status === 1)) {
                   console.log(" 🍾 Transaction " + update.hash + " finished!");
@@ -59,7 +104,55 @@ export default function ExampleUI({
               console.log(await result);
             }}
           >
-            Set Purpose!
+            Create Loan Ask
+          </Button>
+        </div>
+        <Divider />
+        <h4>Underwrite a loan</h4>
+        <div style={{ margin: 8 }}>
+          <Input
+            placeholder="Loan ID"
+            onChange={e => {
+              setLoanID(e.target.value);
+            }}
+          />
+          <EtherInput
+            autofocus
+            price={price}
+            placeholder="Enter amount"
+            onChange={ e => {
+              setLoanUnderwrittenAmount(e.target.value);
+            }}
+          />
+          <br />
+          <Button
+            style={{ marginTop: 8 }}
+            onClick={async () => {
+              /* look how you call setPurpose on your contract: */
+              /* notice how you pass a call back for tx updates too */
+              const result = tx(writeContracts.LendingAuction.underwriteLoan(
+                  loanID, 
+                  { value: loanUnderwrittenAmount }
+                ), update => {
+                console.log("📡 Transaction Update:", update);
+                if (update && (update.status === "confirmed" || update.status === 1)) {
+                  console.log(" 🍾 Transaction " + update.hash + " finished!");
+                  console.log(
+                    " ⛽️ " +
+                      update.gasUsed +
+                      "/" +
+                      (update.gasLimit || update.gas) +
+                      " @ " +
+                      parseFloat(update.gasPrice) / 1000000000 +
+                      " gwei",
+                  );
+                }
+              });
+              console.log("awaiting metamask/web3 confirm result...", result);
+              console.log(await result);
+            }}
+          >
+            Underwrite Loan
           </Button>
         </div>
         <Divider />
