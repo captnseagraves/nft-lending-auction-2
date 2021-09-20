@@ -1,0 +1,4 @@
+- bundle nfts in loan
+- create the listing and send the link to others
+- chargedparticles, bundled nfts, emblem finance, seasons nft
+- Create <contractCallButton /> component

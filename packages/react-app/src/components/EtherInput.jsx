@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
   <EtherInput
     autofocus
     price={price}
-    value=100
+    value={100}
     placeholder="Enter amount"
     onChange={value => {
       setAmount(value);

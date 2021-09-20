@@ -4,7 +4,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { utils } from "ethers";
 import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin, Switch, Space } from "antd";
 import React, { useState } from "react";
-import { Address, Balance } from "../components";
+import { Address, Balance, EtherInput } from "../components";
 import moment from 'moment';
 
 export default function ExampleUI({
@@ -24,12 +24,10 @@ export default function ExampleUI({
   const [loanInterestRate, setLoanInterestRate] = useState("");
   const [maxLoanAmount, setMaxLoanAmount] = useState("");
   const [loanCompleteTime, setLoanCompleteTime] = useState("");
+  const [loanID, setLoanID] = useState("");
+  const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
 
   console.log("NFTAddress", NFTAddress)
-  console.log("NFTID", NFTID)
-  console.log("loanInterestRate", loanInterestRate)
-  console.log("maxLoanAmount", maxLoanAmount)
-  console.log("loanCompleteTime", loanCompleteTime)
 
   return (
     <div>
@@ -107,6 +105,54 @@ export default function ExampleUI({
             }}
           >
             Create Loan Ask
+          </Button>
+        </div>
+        <Divider />
+        <h4>Underwrite a loan</h4>
+        <div style={{ margin: 8 }}>
+          <Input
+            placeholder="Loan ID"
+            onChange={e => {
+              setLoanID(e.target.value);
+            }}
+          />
+          <EtherInput
+            autofocus
+            price={price}
+            placeholder="Enter amount"
+            onChange={ e => {
+              setLoanUnderwrittenAmount(e.target.value);
+            }}
+          />
+          <br />
+          <Button
+            style={{ marginTop: 8 }}
+            onClick={async () => {
+              /* look how you call setPurpose on your contract: */
+              /* notice how you pass a call back for tx updates too */
+              const result = tx(writeContracts.LendingAuction.underwriteLoan(
+                  loanID, 
+                  { value: loanUnderwrittenAmount }
+                ), update => {
+                console.log("📡 Transaction Update:", update);
+                if (update && (update.status === "confirmed" || update.status === 1)) {
+                  console.log(" 🍾 Transaction " + update.hash + " finished!");
+                  console.log(
+                    " ⛽️ " +
+                      update.gasUsed +
+                      "/" +
+                      (update.gasLimit || update.gas) +
+                      " @ " +
+                      parseFloat(update.gasPrice) / 1000000000 +
+                      " gwei",
+                  );
+                }
+              });
+              console.log("awaiting metamask/web3 confirm result...", result);
+              console.log(await result);
+            }}
+          >
+            Underwrite Loan
           </Button>
         </div>
         <Divider />
