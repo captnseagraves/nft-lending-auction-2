@@ -116,11 +116,9 @@ export default function ExampleUI({
               setLoanID(e.target.value);
             }}
           />
-          <EtherInput
-            autofocus
-            price={price}
-            placeholder="Enter amount"
-            onChange={ e => {
+          <Input
+            placeholder="Enter amount in Wei"
+            onChange={e => {
               setLoanUnderwrittenAmount(e.target.value);
             }}
           />

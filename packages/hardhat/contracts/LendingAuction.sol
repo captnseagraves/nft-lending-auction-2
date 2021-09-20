@@ -100,6 +100,8 @@ contract LendingAuction{
 
         // NFT id and increment numLoans
         uint256 loanId = ++numLoans;
+        console.log("loanId", loanId);
+
 
         // This is weird. A user has to approve first? why not just let them transfer the 721?
         // Transfer NFT from owner to contract

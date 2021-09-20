@@ -2,3 +2,5 @@
 - create the listing and send the link to others
 - chargedparticles, bundled nfts, emblem finance, seasons nft
 - Create <contractCallButton /> component
+- need to `approve` lendingAuction contract to `transferFrom` before createLoan
+- values are in wei
