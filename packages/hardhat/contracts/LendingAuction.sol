@@ -57,15 +57,15 @@ contract LendingAuction{
     uint256 loanCompleteTime
   );
   // New loan lender/bidder
-  event LoanUnderwritten(uint256 id, address lender);
+  event LoanUnderwritten(uint256 loanId, address lender);
   // Loan drawn by NFT owner
-  event LoanDrawn(uint256 id);
+  event LoanDrawn(uint256 loanId);
   // Loan repayed by address
-  event LoanRepayed(uint256 id, address lender, address repayer);
+  event LoanRepayed(uint256 loanId, address lender, address repayer);
   // Loan cancelled by NFT owner
-  event LoanCancelled(uint256 id);
+  event LoanCancelled(uint256 loanId);
   // NFT seized by lender
-  event LoanSeized(uint256 id, address lender, address caller);
+  event LoanSeized(uint256 loanId, address lender, address caller);
 
     // ============ Functions ============
 

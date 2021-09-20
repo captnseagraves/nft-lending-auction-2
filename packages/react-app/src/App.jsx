@@ -198,6 +198,10 @@ function App(props) {
   const balance = useContractReader(readContracts, "YourCollectible", "balanceOf", [address]);
   console.log("🤗 balance:", balance);
 
+  // keep track of a variable from the contract in the local React state:
+  const numLoans = useContractReader(readContracts, "LendingAuction", "numLoans");
+  console.log("🤗 numLoans", numLoans);
+
   // 📟 Listen for broadcast events
   const transferEvents = useEventListener(readContracts, "YourCollectible", "Transfer", localProvider, 1);
   console.log("📟 Transfer events:", transferEvents);
@@ -561,29 +565,6 @@ function App(props) {
               />
             </div>
 
-            <Contract
-              name="YourCollectible"
-              signer={userSigner}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-            <Contract
-              name="PawnBank"
-              signer={userSigner}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-          </Route>
-          <Route path="/pawn-bank">
-          <Contract
-              name="PawnBank"
-              signer={userSigner}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
           </Route>
           <Route path="/lending-auction">
           <Contract
@@ -631,6 +612,7 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
+              numLoans={numLoans}
             />
           </Route>
           <Route path="/transfers">

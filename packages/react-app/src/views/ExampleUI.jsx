@@ -27,7 +27,9 @@ export default function ExampleUI({
   const [loanID, setLoanID] = useState("");
   const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
 
-  console.log("NFTAddress", NFTAddress)
+  if (readContracts) {
+    console.log("readContracts", readContracts.LendingAuction.loans(1))
+  }
 
   return (
     <div>
@@ -126,8 +128,6 @@ export default function ExampleUI({
           <Button
             style={{ marginTop: 8 }}
             onClick={async () => {
-              /* look how you call setPurpose on your contract: */
-              /* notice how you pass a call back for tx updates too */
               const result = tx(writeContracts.LendingAuction.underwriteLoan(
                   loanID, 
                   { value: loanUnderwrittenAmount }
