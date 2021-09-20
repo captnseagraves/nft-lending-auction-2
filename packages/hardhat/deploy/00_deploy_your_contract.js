@@ -21,6 +21,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // args: ["Hello"],
     log: true,
   });
+
   /*
     // Getting a previously deployed contract
     const YourContract = await ethers.getContract("YourContract", deployer);

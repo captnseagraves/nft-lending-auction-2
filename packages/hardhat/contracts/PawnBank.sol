@@ -82,6 +82,7 @@ contract PawnBank {
    * @param _interestRate percentage fixed interest rate for period
    * @param _maxLoanAmount maximum allowed Ether bid
    * @param _loanCompleteTime unix time of loan completion (date and time in future)
+
    * @return Loan id
    */
   function createLoan(
@@ -139,6 +140,7 @@ contract PawnBank {
     // Seconds that any loan has been active
     uint256 _secondsSinceFirstBid = loan.loanCompleteTime - loan.firstBidTime;
     // Duration of total loan time that current bid has been active
+
     uint256 _durationAsTopBid = SafeMath.div(_secondsAsTopBid, _secondsSinceFirstBid);
     // Interest rate
     uint256 _interestRate = SafeMath.div(loan.interestRate, 100);

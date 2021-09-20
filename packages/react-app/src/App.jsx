@@ -560,6 +560,21 @@ function App(props) {
                 }}
               />
             </div>
+
+            <Contract
+              name="YourCollectible"
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+            <Contract
+              name="PawnBank"
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
           </Route>
           <Route path="/pawn-bank">
           <Contract
