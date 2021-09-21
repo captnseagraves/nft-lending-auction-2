@@ -9,7 +9,7 @@ import "./App.css";
 import { Account, Address, AddressInput, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
 import {INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { ExampleUI, OpenAuctions, YourLoans} from "./views";
+import { ExampleUI, OpenAuctions, YourLoans, YourNFTs} from "./views";
 import {
   useBalance,
   useContractLoader,
@@ -20,7 +20,6 @@ import {
   useOnBlock,
   useUserSigner,
 } from "./hooks";
-import moment from 'moment';
 
 const { BufferList } = require("bl");
 // https://www.npmjs.com/package/ipfs-http-client
@@ -196,8 +195,8 @@ function App(props) {
   // ]);
 
   // keep track of a variable from the contract in the local React state:
-  const balance = useContractReader(readContracts, "YourCollectible", "balanceOf", [address], 10000);
-  console.log("🤗 balance:", balance);
+  // const balance = useContractReader(readContracts, "YourCollectible", "balanceOf", [address], 10000);
+  // console.log("🤗 balance:", balance);
 
   // keep track of a variable from the contract in the local React state:
   // const numLoans = useContractReader(readContracts, "LendingAuction", "numLoans");
@@ -214,40 +213,8 @@ function App(props) {
   //
   // 🧠 This effect will update yourCollectibles by polling when your balance changes
   //
-  const yourBalance = balance && balance.toNumber && balance.toNumber();
-  const [yourCollectibles, setYourCollectibles] = useState();
-
-  useEffect(() => {
-    const updateYourCollectibles = async () => {
-      const collectibleUpdate = [];
-      for (let tokenIndex = 0; tokenIndex < balance; tokenIndex++) {
-        try {
-          console.log("GEtting token index", tokenIndex);
-          const tokenId = await readContracts.YourCollectible.tokenOfOwnerByIndex(address, tokenIndex);
-          console.log("tokenId", tokenId);
-          const tokenURI = await readContracts.YourCollectible.tokenURI(tokenId);
-          console.log("tokenURI", tokenURI);
-
-          const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
-          console.log("ipfsHash", ipfsHash);
-
-          const jsonManifestBuffer = await getFromIPFS(ipfsHash);
-
-          try {
-            const jsonManifest = JSON.parse(jsonManifestBuffer.toString());
-            console.log("jsonManifest", jsonManifest);
-            collectibleUpdate.push({ id: tokenId, uri: tokenURI, owner: address, ...jsonManifest });
-          } catch (e) {
-            console.log(e);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      setYourCollectibles(collectibleUpdate);
-    };
-    updateYourCollectibles();
-  }, [address, yourBalance]);
+  // const yourBalance = balance && balance.toNumber && balance.toNumber();
+  // const [yourCollectibles, setYourCollectibles] = useState();
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -420,20 +387,6 @@ function App(props) {
     );
   }
 
-  const [yourJSON, setYourJSON] = useState(STARTING_JSON);
-  const [sending, setSending] = useState();
-  const [ipfsHash, setIpfsHash] = useState();
-  const [ipfsDownHash, setIpfsDownHash] = useState();
-
-  const [downloading, setDownloading] = useState();
-  const [ipfsContent, setIpfsContent] = useState();
-
-  const [transferToAddresses, setTransferToAddresses] = useState({});
-
-  const [loanInterestRate, setLoanInterestRate] = useState("");
-  const [maxLoanAmount, setMaxLoanAmount] = useState("");
-  const [loanCompleteTime, setLoanCompleteTime] = useState("");
-
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -441,27 +394,17 @@ function App(props) {
       {networkDisplay}
       <BrowserRouter>
         <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
-          <Menu.Item key="/">
+        <Menu.Item key="/open-auctions">
             <Link
               onClick={() => {
-                setRoute("/");
+                setRoute("/open-auctions");
               }}
-              to="/"
+              to="/open-auctions"
             >
-              YourCollectibles
+              Open Auctions
             </Link>
           </Menu.Item>
-          <Menu.Item key="/lending-auction">
-            <Link
-              onClick={() => {
-                setRoute("/lending-auction");
-              }}
-              to="/lending-auction"
-            >
-              Lending Auction Functions
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/exampleui">
+          {/* <Menu.Item key="/exampleui">
             <Link
               onClick={() => {
                 setRoute("/exampleui");
@@ -470,7 +413,7 @@ function App(props) {
             >
               Lending Auction Home
             </Link>
-          </Menu.Item>
+          </Menu.Item> */}
           <Menu.Item key="/your-loans">
             <Link
               onClick={() => {
@@ -481,24 +424,24 @@ function App(props) {
               Your Loans
             </Link>
           </Menu.Item>
-          <Menu.Item key="/open-auctions">
+          <Menu.Item key="/">
             <Link
               onClick={() => {
-                setRoute("/open-auctions");
+                setRoute("/");
               }}
-              to="/open-auctions"
+              to="/"
             >
-              Open Auctions
+              Your NFTs
             </Link>
           </Menu.Item>
-          <Menu.Item key="/transfers">
+          <Menu.Item key="/lending-auction">
             <Link
               onClick={() => {
-                setRoute("/transfers");
+                setRoute("/lending-auction");
               }}
-              to="/transfers"
+              to="/lending-auction"
             >
-              Transfers
+              Lending Auction Functions
             </Link>
           </Menu.Item>
           <Menu.Item key="/debugcontracts">
@@ -515,122 +458,19 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
-            <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
-              <List
-                bordered
-                dataSource={yourCollectibles}
-                renderItem={item => {
-                  const id = item.id.toNumber();
-                  return (
-                    <List.Item key={id + "_" + item.uri + "_" + item.owner}>
-                      <Card
-                        title={
-                          <div>
-                            <span style={{ fontSize: 16, marginRight: 8 }}>#{id}</span> {item.name}
-                          </div>
-                        }
-                      >
-                        <div>
-                          <img src={item.image} style={{ maxWidth: 150 }} />
-                        </div>
-                        <div>{item.description}</div>
-                      </Card>
-
-                      <div>
-                        owner:{" "}
-                        <Address
-                          address={item.owner}
-                          ensProvider={mainnetProvider}
-                          blockExplorer={blockExplorer}
-                          fontSize={16}
-                        />
-                        <AddressInput
-                          ensProvider={mainnetProvider}
-                          placeholder="transfer to address"
-                          value={transferToAddresses[id]}
-                          onChange={newValue => {
-                            const update = {};
-                            update[id] = newValue;
-                            setTransferToAddresses({ ...transferToAddresses, ...update });
-                          }}
-                        />
-                        <Button
-                          onClick={() => {
-                            console.log("writeContracts", writeContracts);
-                            tx(writeContracts.YourCollectible.transferFrom(address, transferToAddresses[id], id));
-                          }}
-                        >
-                          Transfer
-                        </Button>
-                        <Divider /> 
-                        <h4>Create a lending auction for this NFT</h4>
-                        <div style={{ margin: 8 }}>
-                          <Input
-                            placeholder="Interest Rate %"
-                            onChange={e => {
-                              setLoanInterestRate(e.target.value);
-                            }}
-                          />
-                          <Input
-                            placeholder="Max Loan Amount in WEI"
-                            onChange={e => {
-                              setMaxLoanAmount(e.target.value);
-                            }}
-                          />
-                          
-                          <Space direction="vertical" size={12}>
-                            <DatePicker 
-                              showTime 
-                              onOk={ value => {
-                                let timestamp = moment(value._d).unix()
-                                setLoanCompleteTime(timestamp);
-                                }} 
-                            /> 
-                          </Space>
-                          <br />
-                          <Button
-                            style={{ marginTop: 8 }}
-                            onClick={async () => {
-                              /* look how you call setPurpose on your contract: */
-                              /* notice how you pass a call back for tx updates too */
-                              const result = tx(writeContracts.LendingAuction.createLoan(
-                                Number(loanInterestRate), 
-                                Number(maxLoanAmount), 
-                                loanCompleteTime
-                                ), update => {
-                                console.log("📡 Transaction Update:", update);
-                                if (update && (update.status === "confirmed" || update.status === 1)) {
-                                  console.log(" 🍾 Transaction " + update.hash + " finished!");
-                                  console.log(
-                                    " ⛽️ " +
-                                      update.gasUsed +
-                                      "/" +
-                                      (update.gasLimit || update.gas) +
-                                      " @ " +
-                                      parseFloat(update.gasPrice) / 1000000000 +
-                                      " gwei",
-                                  );
-                                }
-                              });
-                              console.log("awaiting metamask/web3 confirm result...", result);
-                              console.log(await result);
-                            }}
-                          >
-                            Create Loan Ask
-                          </Button>
-                        </div>
-                      </div>
-                    </List.Item>
-                  );
-                }}
+            <YourNFTs
+                address={address}
+                userSigner={userSigner}
+                mainnetProvider={mainnetProvider}
+                localProvider={localProvider}
+                yourLocalBalance={yourLocalBalance}
+                price={price}
+                tx={tx}
+                writeContracts={writeContracts}
+                readContracts={readContracts}
+                loanCreatedEvents={loanCreatedEvents}
+                blockExplorer={blockExplorer}
               />
-            </div>
-
           </Route>
           <Route path="/lending-auction">
           <Contract
@@ -641,7 +481,7 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
           </Route>
-          <Route path="/exampleui">
+          {/* <Route path="/exampleui">
             <ExampleUI
               address={address}
               userSigner={userSigner}
@@ -653,7 +493,7 @@ function App(props) {
               writeContracts={writeContracts}
               readContracts={readContracts}
             />
-          </Route>
+          </Route> */}
           <Route path="/your-loans">
             <YourLoans
               address={address}
@@ -683,98 +523,6 @@ function App(props) {
               loanCreatedEvents={loanCreatedEvents}
               blockExplorer={blockExplorer}
             />
-          </Route>
-          <Route path="/transfers">
-            {/* <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
-              <List
-                bordered
-                dataSource={transferEvents}
-                renderItem={item => {
-                  return (
-                    <List.Item key={item[0] + "_" + item[1] + "_" + item.blockNumber + "_" + item[2].toNumber()}>
-                      <span style={{ fontSize: 16, marginRight: 8 }}>#{item[2].toNumber()}</span>
-                      <Address address={item[0]} ensProvider={mainnetProvider} fontSize={16} /> =&gt;
-                      <Address address={item[1]} ensProvider={mainnetProvider} fontSize={16} />
-                    </List.Item>
-                  );
-                }}
-              />
-            </div> */}
-          </Route>
-
-          <Route path="/ipfsup">
-            <div style={{ paddingTop: 32, width: 740, margin: "auto", textAlign: "left" }}>
-              <ReactJson
-                style={{ padding: 8 }}
-                src={yourJSON}
-                theme="pop"
-                enableClipboard={false}
-                onEdit={(edit, a) => {
-                  setYourJSON(edit.updated_src);
-                }}
-                onAdd={(add, a) => {
-                  setYourJSON(add.updated_src);
-                }}
-                onDelete={(del, a) => {
-                  setYourJSON(del.updated_src);
-                }}
-              />
-            </div>
-
-            <Button
-              style={{ margin: 8 }}
-              loading={sending}
-              size="large"
-              shape="round"
-              type="primary"
-              onClick={async () => {
-                console.log("UPLOADING...", yourJSON);
-                setSending(true);
-                setIpfsHash();
-                const result = await ipfs.add(JSON.stringify(yourJSON)); // addToIPFS(JSON.stringify(yourJSON))
-                if (result && result.path) {
-                  setIpfsHash(result.path);
-                }
-                setSending(false);
-                console.log("RESULT:", result);
-              }}
-            >
-              Upload to IPFS
-            </Button>
-
-            <div style={{ padding: 16, paddingBottom: 150 }}>{ipfsHash}</div>
-          </Route>
-          <Route path="/ipfsdown">
-            <div style={{ paddingTop: 32, width: 740, margin: "auto" }}>
-              <Input
-                value={ipfsDownHash}
-                placeHolder="IPFS hash (like QmadqNw8zkdrrwdtPFK1pLi8PPxmkQ4pDJXY8ozHtz6tZq)"
-                onChange={e => {
-                  setIpfsDownHash(e.target.value);
-                }}
-              />
-            </div>
-            <Button
-              style={{ margin: 8 }}
-              loading={sending}
-              size="large"
-              shape="round"
-              type="primary"
-              onClick={async () => {
-                console.log("DOWNLOADING...", ipfsDownHash);
-                setDownloading(true);
-                setIpfsContent();
-                const result = await getFromIPFS(ipfsDownHash); // addToIPFS(JSON.stringify(yourJSON))
-                if (result && result.toString) {
-                  setIpfsContent(result.toString());
-                }
-                setDownloading(false);
-              }}
-            >
-              Download from IPFS
-            </Button>
-
-            <pre style={{ padding: 16, width: 500, margin: "auto", paddingBottom: 150 }}>{ipfsContent}</pre>
           </Route>
           <Route path="/debugcontracts">
             <Contract
