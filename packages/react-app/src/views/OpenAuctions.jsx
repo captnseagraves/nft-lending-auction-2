@@ -66,15 +66,15 @@ export default function OpenAuctions({
                 tokenId: String(loanAtIndex.tokenId),
                 tokenOwner: loanAtIndex.tokenOwner,
                 tokenURI: tokenURI,
-                firstBidTime: loanAtIndex.firstBidTime,
-                historicInterest: loanAtIndex.historicInterest,
-                interestRate: loanAtIndex.interestRate,
-                lastBidTime: loanAtIndex.lastBidTime,
+                firstBidTime: String(loanAtIndex.firstBidTime),
+                historicInterest: String(loanAtIndex.historicInterest),
+                interestRate: String(loanAtIndex.interestRate),
+                lastBidTime: String(loanAtIndex.lastBidTime),
                 lender: loanAtIndex.lender,
-                loanAmount: loanAtIndex.loanAmount,
-                loanAmountDrawn: loanAtIndex.loanAmountDrawn,
-                loanCompleteTime: loanAtIndex.loanCompleteTime,
-                maxLoanAmount: loanAtIndex.maxLoanAmount,
+                loanAmount: String(loanAtIndex.loanAmount),
+                loanAmountDrawn: String(loanAtIndex.loanAmountDrawn),
+                loanCompleteTime: String(loanAtIndex.loanCompleteTime),
+                maxLoanAmount: String(loanAtIndex.maxLoanAmount),
                 tokenMetadata: { ...jsonManifest }
               });
             } catch (e) {
@@ -117,7 +117,19 @@ export default function OpenAuctions({
                       </Card>
 
                       <div>
-                        owner:{" "}
+                      <div>loan ID: {item.loanId}</div>
+                      <div>Token address: {item.tokenAddress}</div>
+                      <div>Time of first bid: {item.firstBidTime}</div>
+                      <div>Time of last bid: {item.lastBidTime}</div>
+                      <div>Total historic interest: {item.historicInterest}</div>
+                      <div>Current Interest Rate: {item.interestRate}</div>
+                      <div>Lender: {item.lender}</div>
+                      <div>Max Loan Amount: {item.maxLoanAmount}</div>
+                      <div>Current max bid: {item.loanAmount}</div>
+                      <div>Loan amount drawn: {item.loanAmountDrawn}</div>
+                      <div>Loan ends at: {item.loanCompleteTime}</div>
+                      <br />
+                        Token owner:{" "}
                         <Address
                           address={item.tokenOwner}
                           ensProvider={mainnetProvider}
