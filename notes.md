@@ -4,4 +4,4 @@
 - Create <contractCallButton /> component
 - need to `approve` lendingAuction contract to `transferFrom` before createLoan
 - values are in wei
-- add loanId to individual loan struct
+- remove need to `approve` lendingAuction contract to transferFrom in `createLoan`

@@ -1,5 +1,5 @@
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { Alert, Button, Card, Col, Input, List, Menu, Row } from "antd";
+import { Alert, Button, Card, Col, Input, List, Menu, Row, Divider, DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 import React, { useCallback, useEffect, useState } from "react";
 import ReactJson from "react-json-view";
@@ -20,6 +20,7 @@ import {
   useOnBlock,
   useUserSigner,
 } from "./hooks";
+import moment from 'moment';
 
 const { BufferList } = require("bl");
 // https://www.npmjs.com/package/ipfs-http-client
@@ -429,6 +430,10 @@ function App(props) {
 
   const [transferToAddresses, setTransferToAddresses] = useState({});
 
+  const [loanInterestRate, setLoanInterestRate] = useState("");
+  const [maxLoanAmount, setMaxLoanAmount] = useState("");
+  const [loanCompleteTime, setLoanCompleteTime] = useState("");
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -562,6 +567,63 @@ function App(props) {
                         >
                           Transfer
                         </Button>
+                        <Divider /> 
+                        <h4>Create a lending auction for this NFT</h4>
+                        <div style={{ margin: 8 }}>
+                          <Input
+                            placeholder="Interest Rate %"
+                            onChange={e => {
+                              setLoanInterestRate(e.target.value);
+                            }}
+                          />
+                          <Input
+                            placeholder="Max Loan Amount in WEI"
+                            onChange={e => {
+                              setMaxLoanAmount(e.target.value);
+                            }}
+                          />
+                          
+                          <Space direction="vertical" size={12}>
+                            <DatePicker 
+                              showTime 
+                              onOk={ value => {
+                                let timestamp = moment(value._d).unix()
+                                setLoanCompleteTime(timestamp);
+                                }} 
+                            /> 
+                          </Space>
+                          <br />
+                          <Button
+                            style={{ marginTop: 8 }}
+                            onClick={async () => {
+                              /* look how you call setPurpose on your contract: */
+                              /* notice how you pass a call back for tx updates too */
+                              const result = tx(writeContracts.LendingAuction.createLoan(
+                                Number(loanInterestRate), 
+                                Number(maxLoanAmount), 
+                                loanCompleteTime
+                                ), update => {
+                                console.log("📡 Transaction Update:", update);
+                                if (update && (update.status === "confirmed" || update.status === 1)) {
+                                  console.log(" 🍾 Transaction " + update.hash + " finished!");
+                                  console.log(
+                                    " ⛽️ " +
+                                      update.gasUsed +
+                                      "/" +
+                                      (update.gasLimit || update.gas) +
+                                      " @ " +
+                                      parseFloat(update.gasPrice) / 1000000000 +
+                                      " gwei",
+                                  );
+                                }
+                              });
+                              console.log("awaiting metamask/web3 confirm result...", result);
+                              console.log(await result);
+                            }}
+                          >
+                            Create Loan Ask
+                          </Button>
+                        </div>
                       </div>
                     </List.Item>
                   );
@@ -603,6 +665,8 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
+              loanCreatedEvents={loanCreatedEvents}
+              blockExplorer={blockExplorer}
             />
           </Route>
           <Route path="/open-auctions">

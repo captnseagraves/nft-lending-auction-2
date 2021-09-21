@@ -45,7 +45,6 @@ export default function OpenAuctions({
 
   const [openLoanAuctions, setOpenLoanAuctions] = useState([]);
   const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
-  const [transferToAddresses, setTransferToAddresses] = useState({});
 
   const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
   console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
