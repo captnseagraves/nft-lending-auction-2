@@ -4,7 +4,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { utils } from "ethers";
 import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin, Switch, Space } from "antd";
 import React, { useState, useEffect } from "react";
-import { Address, Balance } from "../components";
+import { Address, Balance, AddressInput } from "../components";
 
 const { BufferList } = require("bl");
 // https://www.npmjs.com/package/ipfs-http-client
@@ -36,25 +36,12 @@ export default function OpenAuctions({
   price,
   tx,
   readContracts,
-  writeContracts
+  writeContracts,
+  blockExplorer
 }) {
 
   const [openLoanAuctions, setOpenLoanAuctions] = useState([]);
-
-
-  // firstBidTime: BigNumber {_hex: "0x00", _isBigNumber: true}
-// historicInterest: BigNumber {_hex: "0x00", _isBigNumber: true}
-// interestRate: BigNumber {_hex: "0x00", _isBigNumber: true}
-// lastBidTime: BigNumber {_hex: "0x00", _isBigNumber: true}
-// lender: "0x0000000000000000000000000000000000000000"
-// loanAmount: BigNumber {_hex: "0x00", _isBigNumber: true}
-// loanAmountDrawn: BigNumber {_hex: "0x00", _isBigNumber: true}
-// loanCompleteTime: BigNumber {_hex: "0x00", _isBigNumber: true}
-// maxLoanAmount: BigNumber {_hex: "0x00", _isBigNumber: true}
-// tokenAddress: "0x0000000000000000000000000000000000000000"
-// tokenId: BigNumber {_hex: "0x00", _isBigNumber: true}
-// tokenOwner: "0x0000000000000000000000000000000000000000"
-
+  const [transferToAddresses, setTransferToAddresses] = useState({});
 
   useEffect(() => {
     const updateOpenLoanAuctions = async () => {
@@ -74,9 +61,9 @@ export default function OpenAuctions({
             try {
               console.log("adding loan and NFT details to state update");
               openLoanAuctionsUpdate.push({
-                loanId: loanAtIndex.loanId, 
+                loanId: String(loanAtIndex.loanId), 
                 tokenAddress: loanAtIndex.tokenAddress,
-                tokenId: loanAtIndex.tokenId,
+                tokenId: String(loanAtIndex.tokenId),
                 tokenOwner: loanAtIndex.tokenOwner,
                 tokenURI: tokenURI,
                 firstBidTime: loanAtIndex.firstBidTime,
@@ -119,20 +106,20 @@ export default function OpenAuctions({
                       <Card
                         title={
                           <div>
-                            <span style={{ fontSize: 16, marginRight: 8 }}>#{id}</span> "farts"
+                            <span style={{ fontSize: 16, marginRight: 8 }}>#{item.tokenId}</span> {item.tokenMetadata.name}
                           </div>
                         }
                       >
-                        {/* <div>
-                          <img src={item.image} style={{ maxWidth: 150 }} />
+                        <div>
+                          <img src={item.tokenMetadata.image} style={{ maxWidth: 150 }} />
                         </div>
-                        <div>{item.description}</div> */}
+                        <div>{item.tokenMetadata.description}</div>
                       </Card>
 
-                      {/* <div>
+                      <div>
                         owner:{" "}
                         <Address
-                          address={item.owner}
+                          address={item.tokenOwner}
                           ensProvider={mainnetProvider}
                           blockExplorer={blockExplorer}
                           fontSize={16}
@@ -155,7 +142,7 @@ export default function OpenAuctions({
                         >
                           Transfer
                         </Button>
-                      </div> */}
+                      </div>
                     </List.Item>
                   );
                 }}

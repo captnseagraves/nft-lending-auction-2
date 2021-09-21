@@ -617,7 +617,7 @@ function App(props) {
               writeContracts={writeContracts}
               readContracts={readContracts}
               loanCreatedEvents={loanCreatedEvents}
-              getFromIPFS={getFromIPFS}
+              blockExplorer={blockExplorer}
             />
           </Route>
           <Route path="/transfers">
