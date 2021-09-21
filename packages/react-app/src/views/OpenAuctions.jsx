@@ -5,6 +5,7 @@ import { utils } from "ethers";
 import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin, Switch, Space } from "antd";
 import React, { useState, useEffect } from "react";
 import { Address, Balance, AddressInput } from "../components";
+import { useEventListener } from "../hooks";
 
 const { BufferList } = require("bl");
 // https://www.npmjs.com/package/ipfs-http-client
@@ -26,6 +27,8 @@ const getFromIPFS = async hashToGet => {
   }
 };
 
+
+
 export default function OpenAuctions({
   loanCreatedEvents,
   lendingAuctions,
@@ -41,7 +44,11 @@ export default function OpenAuctions({
 }) {
 
   const [openLoanAuctions, setOpenLoanAuctions] = useState([]);
+  const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
   const [transferToAddresses, setTransferToAddresses] = useState({});
+
+  const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
+  console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
 
   useEffect(() => {
     const updateOpenLoanAuctions = async () => {
@@ -90,7 +97,7 @@ export default function OpenAuctions({
       setOpenLoanAuctions(openLoanAuctionsUpdate);
     };
     updateOpenLoanAuctions();
-  }, [loanCreatedEvents]);
+  }, [loanCreatedEvents, loanUnderwrittenEvents]);
 
   return (
     <div>
@@ -117,43 +124,71 @@ export default function OpenAuctions({
                       </Card>
 
                       <div>
-                      <div>loan ID: {item.loanId}</div>
-                      <div>Token address: {item.tokenAddress}</div>
-                      <div>Time of first bid: {item.firstBidTime}</div>
-                      <div>Time of last bid: {item.lastBidTime}</div>
-                      <div>Total historic interest: {item.historicInterest}</div>
-                      <div>Current Interest Rate: {item.interestRate}</div>
-                      <div>Lender: {item.lender}</div>
-                      <div>Max Loan Amount: {item.maxLoanAmount}</div>
-                      <div>Current max bid: {item.loanAmount}</div>
-                      <div>Loan amount drawn: {item.loanAmountDrawn}</div>
-                      <div>Loan ends at: {item.loanCompleteTime}</div>
-                      <br />
+                        <div>loan ID: {item.loanId}</div>
+                        <div>Token address: {item.tokenAddress}</div>
+                        <div>Time of first bid: {item.firstBidTime}</div>
+                        <div>Time of last bid: {item.lastBidTime}</div>
+                        <div>Total historic interest: {item.historicInterest}</div>
+                        <div>Current Interest Rate: {item.interestRate}</div>
+                        <div>Lender: {" "}
+                          <Address
+                              address={item.lender}
+                              ensProvider={mainnetProvider}
+                              blockExplorer={blockExplorer}
+                              fontSize={16}
+                            />
+                        </div>
+                        <div>Max Loan Amount: {item.maxLoanAmount}</div>
+                        <div>Current max bid: {item.loanAmount}</div>
+                        <div>Loan amount drawn: {item.loanAmountDrawn}</div>
+                        <div>Loan ends at: {item.loanCompleteTime}</div>
                         Token owner:{" "}
-                        <Address
-                          address={item.tokenOwner}
-                          ensProvider={mainnetProvider}
-                          blockExplorer={blockExplorer}
-                          fontSize={16}
-                        />
-                        <AddressInput
-                          ensProvider={mainnetProvider}
-                          placeholder="transfer to address"
-                          value={transferToAddresses[id]}
-                          onChange={newValue => {
-                            const update = {};
-                            update[id] = newValue;
-                            setTransferToAddresses({ ...transferToAddresses, ...update });
+                          <Address
+                            address={item.tokenOwner}
+                            ensProvider={mainnetProvider}
+                            blockExplorer={blockExplorer}
+                            fontSize={16}
+                          />
+                          
+                      <Divider />
+                      <h4>Underwrite this loan</h4>
+                      <div style={{ margin: 8 }}>
+
+                        <Input
+                          placeholder="Enter bid amount in Wei"
+                          onChange={e => {
+                            setLoanUnderwrittenAmount(e.target.value);
                           }}
                         />
+                        <br />
                         <Button
-                          onClick={() => {
-                            console.log("writeContracts", writeContracts);
-                            tx(writeContracts.YourCollectible.transferFrom(address, transferToAddresses[id], id));
+                          style={{ marginTop: 8 }}
+                          onClick={async () => {
+                            const result = tx(writeContracts.LendingAuction.underwriteLoan(
+                                item.loanId, 
+                                { value: loanUnderwrittenAmount }
+                              ), update => {
+                              console.log("📡 Transaction Update:", update);
+                              if (update && (update.status === "confirmed" || update.status === 1)) {
+                                console.log(" 🍾 Transaction " + update.hash + " finished!");
+                                console.log(
+                                  " ⛽️ " +
+                                    update.gasUsed +
+                                    "/" +
+                                    (update.gasLimit || update.gas) +
+                                    " @ " +
+                                    parseFloat(update.gasPrice) / 1000000000 +
+                                    " gwei",
+                                );
+                              }
+                            });
+                            console.log("awaiting metamask/web3 confirm result...", result);
+                            console.log(await result);
                           }}
                         >
-                          Transfer
+                          Underwrite Loan
                         </Button>
+                      </div>
                       </div>
                     </List.Item>
                   );
