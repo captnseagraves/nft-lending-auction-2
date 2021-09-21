@@ -59,6 +59,7 @@ export default function YourNFTs({
 
   useEffect(() => {
     const updateYourCollectibles = async () => {
+    console.log("contract address", readContracts)
       const collectibleUpdate = [];
       for (let tokenIndex = 0; tokenIndex < balance; tokenIndex++) {
         try {
@@ -88,6 +89,8 @@ export default function YourNFTs({
     };
     updateYourCollectibles();
   }, [address, yourBalance]);
+
+
 
   return (
     <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
@@ -169,6 +172,8 @@ export default function YourNFTs({
                               /* look how you call setPurpose on your contract: */
                               /* notice how you pass a call back for tx updates too */
                               const result = tx(writeContracts.LendingAuction.createLoan(
+                                readContracts.YourCollectible.address,
+                                id,
                                 Number(loanInterestRate), 
                                 Number(maxLoanAmount), 
                                 loanCompleteTime

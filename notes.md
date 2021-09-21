@@ -5,3 +5,5 @@
 - need to `approve` lendingAuction contract to `transferFrom` before createLoan
 - values are in wei
 - remove need to `approve` lendingAuction contract to transferFrom in `createLoan`
+- Need to work out the mechanics of allowing an NFT owner to have proxy functionality and/or receive benefits of still owning NFT while it has a lien against it. 
+- rework data to be emitted in events so it can be used in a subgraph and save gas fees. 

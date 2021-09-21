@@ -4,6 +4,8 @@ export { default as Subgraph } from "./Subgraph";
 export { default as YourLoans } from "./YourLoans";
 export { default as OpenAuctions } from "./OpenAuctions";
 export { default as YourNFTs } from "./YourNFTs";
+export { default as YourBorrowing } from "./YourBorrowing";
+export { default as YourLending } from "./YourLending";
 
 
 

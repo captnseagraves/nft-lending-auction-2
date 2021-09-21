@@ -481,19 +481,6 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
           </Route>
-          {/* <Route path="/exampleui">
-            <ExampleUI
-              address={address}
-              userSigner={userSigner}
-              mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
-            />
-          </Route> */}
           <Route path="/your-loans">
             <YourLoans
               address={address}
