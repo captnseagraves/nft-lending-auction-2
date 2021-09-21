@@ -6,6 +6,26 @@ import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin,
 import React, { useState, useEffect } from "react";
 import { Address, Balance } from "../components";
 
+const { BufferList } = require("bl");
+// https://www.npmjs.com/package/ipfs-http-client
+const ipfsAPI = require("ipfs-http-client");
+const ipfs = ipfsAPI({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
+
+// helper function to "Get" from IPFS
+// you usually go content.toString() after this...
+const getFromIPFS = async hashToGet => {
+  for await (const file of ipfs.get(hashToGet)) {
+    console.log(file.path);
+    if (!file.content) continue;
+    const content = new BufferList();
+    for await (const chunk of file.content) {
+      content.append(chunk);
+    }
+    console.log(content);
+    return content;
+  }
+};
+
 export default function OpenAuctions({
   numLoans,
   lendingAuctions,
@@ -16,7 +36,7 @@ export default function OpenAuctions({
   price,
   tx,
   readContracts,
-  writeContracts,
+  writeContracts
 }) {
 
   const [openLoanAuctions, setOpenLoanAuctions] = useState([]);
@@ -38,21 +58,41 @@ export default function OpenAuctions({
 
   useEffect(() => {
     const updateOpenLoanAuctions = async () => {
-      console.log("SEE ME SEE ME SEE ME", openLoanAuctions)
+      console.log("SEE ME SEE ME SEE ME openLoanAuctions", openLoanAuctions)
       const openLoanAuctionsUpdate = [];
-      for (let loanIndex = 1; loanIndex < numLoans - 1; loanIndex++) {
-        console.log("in the for loop")
+      for (let loanIndex = 1; loanIndex <= numLoans; loanIndex++) {
         try {
           console.log("Getting loan at index", loanIndex);
           const loanAtIndex = await readContracts.LendingAuction.loans(loanIndex);
-          console.log("loanAtIndex", loanAtIndex);
-
           try {
-            console.log("in the try statement");
-            openLoanAuctionsUpdate.push({
-              loanId: loanIndex, 
-              tokenAddress: loanAtIndex.tokenAddress
-            });
+            console.log("fetching NFT details");
+            const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);
+            const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
+            const jsonManifestBuffer = await getFromIPFS(ipfsHash);
+            const jsonManifest = JSON.parse(jsonManifestBuffer.toString());
+            console.log("jsonManifest", jsonManifest)
+            try {
+              console.log("adding loan and NFT details to state update");
+              openLoanAuctionsUpdate.push({
+                loanId: loanIndex, 
+                tokenAddress: loanAtIndex.tokenAddress,
+                tokenId: loanAtIndex.tokenId,
+                tokenOwner: loanAtIndex.tokenOwner,
+                tokenURI: tokenURI,
+                firstBidTime: loanAtIndex.firstBidTime,
+                historicInterest: loanAtIndex.historicInterest,
+                interestRate: loanAtIndex.interestRate,
+                lastBidTime: loanAtIndex.lastBidTime,
+                lender: loanAtIndex.lender,
+                loanAmount: loanAtIndex.loanAmount,
+                loanAmountDrawn: loanAtIndex.loanAmountDrawn,
+                loanCompleteTime: loanAtIndex.loanCompleteTime,
+                maxLoanAmount: loanAtIndex.maxLoanAmount,
+                tokenMetadata: { ...jsonManifest }
+              });
+            } catch (e) {
+              console.log(e);
+            }
           } catch (e) {
             console.log(e);
           }
@@ -63,7 +103,7 @@ export default function OpenAuctions({
       setOpenLoanAuctions(openLoanAuctionsUpdate);
     };
     updateOpenLoanAuctions();
-  }, [numLoans]);
+  }, []);
 
   return (
     <div>

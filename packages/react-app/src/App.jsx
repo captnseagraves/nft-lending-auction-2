@@ -613,6 +613,7 @@ function App(props) {
               writeContracts={writeContracts}
               readContracts={readContracts}
               numLoans={numLoans}
+              getFromIPFS={getFromIPFS}
             />
           </Route>
           <Route path="/transfers">
