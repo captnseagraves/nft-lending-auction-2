@@ -27,7 +27,7 @@ const getFromIPFS = async hashToGet => {
 };
 
 export default function OpenAuctions({
-  numLoans,
+  loanCreatedEvents,
   lendingAuctions,
   address,
   mainnetProvider,
@@ -60,10 +60,10 @@ export default function OpenAuctions({
     const updateOpenLoanAuctions = async () => {
       console.log("SEE ME SEE ME SEE ME openLoanAuctions", openLoanAuctions)
       const openLoanAuctionsUpdate = [];
-      for (let loanIndex = 1; loanIndex <= numLoans; loanIndex++) {
+      for (let loanEventIndex = 1; loanEventIndex <= loanCreatedEvents.length; loanEventIndex++) {
         try {
-          console.log("Getting loan at index", loanIndex);
-          const loanAtIndex = await readContracts.LendingAuction.loans(loanIndex);
+          console.log("Getting loan at index", loanEventIndex);
+          const loanAtIndex = await readContracts.LendingAuction.loans(loanEventIndex);
           try {
             console.log("fetching NFT details");
             const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);
@@ -74,7 +74,7 @@ export default function OpenAuctions({
             try {
               console.log("adding loan and NFT details to state update");
               openLoanAuctionsUpdate.push({
-                loanId: loanIndex, 
+                loanId: loanAtIndex.loanId, 
                 tokenAddress: loanAtIndex.tokenAddress,
                 tokenId: loanAtIndex.tokenId,
                 tokenOwner: loanAtIndex.tokenOwner,
@@ -103,7 +103,7 @@ export default function OpenAuctions({
       setOpenLoanAuctions(openLoanAuctionsUpdate);
     };
     updateOpenLoanAuctions();
-  }, []);
+  }, [loanCreatedEvents]);
 
   return (
     <div>

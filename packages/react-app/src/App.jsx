@@ -185,26 +185,30 @@ function App(props) {
   const mainnetContracts = useContractLoader(mainnetProvider);
 
   // If you want to call a function on a new block
-  useOnBlock(mainnetProvider, () => {
-    console.log(`⛓ A new mainnet block is here: ${mainnetProvider._lastBlockNumber}`);
-  });
+  // useOnBlock(mainnetProvider, () => {
+  //   console.log(`⛓ A new mainnet block is here: ${mainnetProvider._lastBlockNumber}`);
+  // });
 
   // Then read your DAI balance like:
-  const myMainnetDAIBalance = useContractReader(mainnetContracts, "DAI", "balanceOf", [
-    "0x34aA3F359A9D614239015126635CE7732c18fDF3",
-  ]);
+  // const myMainnetDAIBalance = useContractReader(mainnetContracts, "DAI", "balanceOf", [
+  //   "0x34aA3F359A9D614239015126635CE7732c18fDF3",
+  // ]);
 
   // keep track of a variable from the contract in the local React state:
-  const balance = useContractReader(readContracts, "YourCollectible", "balanceOf", [address]);
+  const balance = useContractReader(readContracts, "YourCollectible", "balanceOf", [address], 10000);
   console.log("🤗 balance:", balance);
 
   // keep track of a variable from the contract in the local React state:
-  const numLoans = useContractReader(readContracts, "LendingAuction", "numLoans");
-  console.log("🤗 numLoans", numLoans);
+  // const numLoans = useContractReader(readContracts, "LendingAuction", "numLoans");
+  // console.log("🤗 numLoans", numLoans);
 
   // 📟 Listen for broadcast events
-  const transferEvents = useEventListener(readContracts, "YourCollectible", "Transfer", localProvider, 1);
-  console.log("📟 Transfer events:", transferEvents);
+  // const transferEvents = useEventListener(readContracts, "YourCollectible", "Transfer", localProvider, 1);
+  // console.log("📟 Transfer events:", transferEvents);
+
+  // 📟 Listen for broadcast events
+  const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
+  console.log("📟 loanCreated events:", loanCreatedEvents);
 
   //
   // 🧠 This effect will update yourCollectibles by polling when your balance changes
@@ -273,7 +277,7 @@ function App(props) {
       console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
       console.log("📝 readContracts", readContracts);
       console.log("🌍 DAI contract on mainnet:", mainnetContracts);
-      console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
+      // console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
       console.log("🔐 writeContracts", writeContracts);
     }
   }, [
@@ -612,12 +616,12 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              numLoans={numLoans}
+              loanCreatedEvents={loanCreatedEvents}
               getFromIPFS={getFromIPFS}
             />
           </Route>
           <Route path="/transfers">
-            <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+            {/* <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <List
                 bordered
                 dataSource={transferEvents}
@@ -631,7 +635,7 @@ function App(props) {
                   );
                 }}
               />
-            </div>
+            </div> */}
           </Route>
 
           <Route path="/ipfsup">

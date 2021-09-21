@@ -18,6 +18,8 @@ contract LendingAuction{
         address tokenOwner;
         // Current top lender/bidder
         address lender;
+        // id of loan
+        uint256 loanId;
         // NFT token id
         uint256 tokenId;
         // Fixed interest rate
@@ -114,6 +116,7 @@ contract LendingAuction{
         loans[loanId].interestRate = _interestRate;
         loans[loanId].maxLoanAmount = _maxLoanAmount;
         loans[loanId].loanCompleteTime = _loanCompleteTime;
+        loans[loanId].loanId = loanId;
        
         // Emit creation event
         emit LoanCreated(
