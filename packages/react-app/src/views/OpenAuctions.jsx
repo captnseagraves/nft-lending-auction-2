@@ -32,8 +32,6 @@ const getFromIPFS = async hashToGet => {
 
 
 export default function OpenAuctions({
-  loanCreatedEvents,
-  lendingAuctions,
   address,
   mainnetProvider,
   localProvider,
@@ -50,6 +48,9 @@ export default function OpenAuctions({
 
   const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
   console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
+
+  const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
+  console.log("📟 loanCreated events:", loanCreatedEvents);
 
   useEffect(() => {
     const updateOpenLoanAuctions = async () => {
@@ -100,7 +101,7 @@ export default function OpenAuctions({
       setOpenLoanAuctions(openLoanAuctionsUpdate);
     };
     updateOpenLoanAuctions();
-  }, [loanCreatedEvents, loanUnderwrittenEvents]);
+  }, [loanCreatedEvents]);
 
   return (
     <div>

@@ -207,8 +207,8 @@ function App(props) {
   // console.log("📟 Transfer events:", transferEvents);
 
   // 📟 Listen for broadcast events
-  const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
-  console.log("📟 loanCreated events:", loanCreatedEvents);
+  // const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
+  // console.log("📟 loanCreated events:", loanCreatedEvents);
 
   //
   // 🧠 This effect will update yourCollectibles by polling when your balance changes
@@ -468,7 +468,7 @@ function App(props) {
                 tx={tx}
                 writeContracts={writeContracts}
                 readContracts={readContracts}
-                loanCreatedEvents={loanCreatedEvents}
+
                 blockExplorer={blockExplorer}
               />
           </Route>
@@ -492,7 +492,6 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              loanCreatedEvents={loanCreatedEvents}
               blockExplorer={blockExplorer}
             />
           </Route>
@@ -507,7 +506,6 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              loanCreatedEvents={loanCreatedEvents}
               blockExplorer={blockExplorer}
             />
           </Route>
@@ -522,7 +520,6 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              loanCreatedEvents={loanCreatedEvents}
               blockExplorer={blockExplorer}
             />
           </Route>

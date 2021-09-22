@@ -30,7 +30,6 @@ const getFromIPFS = async hashToGet => {
 
 
 export default function YourBorrowing({
-  loanCreatedEvents,
   address,
   mainnetProvider,
   localProvider,
@@ -47,6 +46,9 @@ export default function YourBorrowing({
   const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
   console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
 
+  const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
+  console.log("📟 loanCreated events:", loanCreatedEvents);
+
   useEffect(() => {
     const updateBorrowingLoanAuctions = async () => {
       console.log("BorrowingLoanAuctions", yourBorrowingAuctions)
@@ -55,7 +57,7 @@ export default function YourBorrowing({
         try {
           console.log("Getting loan at index", loanEventIndex);
           const loanAtIndex = await readContracts.LendingAuction.loans(loanEventIndex);
-          if (loanAtIndex.tokenOwner == address && loanAtIndex.loanCompleteTime) {
+          if (loanAtIndex.tokenOwner == address) {
             try {
               console.log("fetching NFT details");
               const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);

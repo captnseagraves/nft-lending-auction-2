@@ -30,7 +30,6 @@ const getFromIPFS = async hashToGet => {
 
 
 export default function YourLending({
-  loanCreatedEvents,
   address,
   mainnetProvider,
   localProvider,
@@ -45,6 +44,9 @@ export default function YourLending({
 
   const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
   console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
+
+  const loanCreatedEvents = useEventListener(readContracts, "LendingAuction", "LoanCreated", localProvider, 1);
+  console.log("📟 loanCreated events:", loanCreatedEvents);
 
   useEffect(() => {
     const updateYourLendingAuctions = async () => {
