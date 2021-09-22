@@ -7,3 +7,17 @@
 - remove need to `approve` lendingAuction contract to transferFrom in `createLoan`
 - Need to work out the mechanics of allowing an NFT owner to have proxy functionality and/or receive benefits of still owning NFT while it has a lien against it. 
 - rework data to be emitted in events so it can be used in a subgraph and save gas fees. 
+- reset loan amount drawn or document repayment amounts to be reflected in frontend
+    - display what has been borrowed, how much interest has accumulated, what is owed, what has been paid.
+- create loan interest amortization chart.
+
+- refactor contract for better UX. 
+- Extend contract to handle any NFT contract
+- refactor contract and frontend to rely on events and refactor
+- spice up the frontend
+- write contract tests
+- write frontend tests
+- integrate and deploy on Rinkeby
+- integrate and deploy on mainnet
+- integrate and deploy with Arbitrum
+- integrate and deploy with Optimism

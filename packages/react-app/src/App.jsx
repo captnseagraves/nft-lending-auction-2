@@ -9,7 +9,7 @@ import "./App.css";
 import { Account, Address, AddressInput, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
 import {INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { ExampleUI, OpenAuctions, YourLoans, YourNFTs} from "./views";
+import { ExampleUI, OpenAuctions, YourBorrowing, YourLending, YourNFTs} from "./views";
 import {
   useBalance,
   useContractLoader,
@@ -404,24 +404,24 @@ function App(props) {
               Open Auctions
             </Link>
           </Menu.Item>
-          {/* <Menu.Item key="/exampleui">
+          <Menu.Item key="/your-borrowing">
             <Link
               onClick={() => {
-                setRoute("/exampleui");
+                setRoute("/your-borrowing");
               }}
-              to="/exampleui"
+              to="/your-borrowing"
             >
-              Lending Auction Home
+              Borrowing
             </Link>
-          </Menu.Item> */}
-          <Menu.Item key="/your-loans">
+          </Menu.Item>
+          <Menu.Item key="/your-lending">
             <Link
               onClick={() => {
-                setRoute("/your-loans");
+                setRoute("/your-lending");
               }}
-              to="/your-loans"
+              to="/your-lending"
             >
-              Your Loans
+              Lending
             </Link>
           </Menu.Item>
           <Menu.Item key="/">
@@ -481,8 +481,23 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
           </Route>
-          <Route path="/your-loans">
-            <YourLoans
+          <Route path="/your-borrowing">
+            <YourBorrowing
+              address={address}
+              userSigner={userSigner}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+              loanCreatedEvents={loanCreatedEvents}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
+          <Route path="/your-lending">
+            <YourLending
               address={address}
               userSigner={userSigner}
               mainnetProvider={mainnetProvider}

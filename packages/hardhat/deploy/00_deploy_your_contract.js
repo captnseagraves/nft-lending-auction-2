@@ -9,12 +9,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // args: ["Hello"],
     log: true,
   });
-  await deploy("PawnBank", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-    from: deployer,
-    // args: ["Hello"],
-    log: true,
-  });
   await deploy("LendingAuction", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
@@ -30,7 +24,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   */
 };
-module.exports.tags = ["YourCollectible", "PawnBank", "LendingAuction"];
+module.exports.tags = ["YourCollectible", "LendingAuction"];
 
 /*
 Tenderly verification

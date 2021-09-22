@@ -90,8 +90,6 @@ export default function YourNFTs({
     updateYourCollectibles();
   }, [address, yourBalance]);
 
-
-
   return (
     <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <List
@@ -143,6 +141,36 @@ export default function YourNFTs({
                         <Divider /> 
                         <h4>Create a lending auction for this NFT</h4>
                         <div style={{ margin: 8 }}>
+                        <Button
+                            style={{ marginTop: 8 }}
+                            onClick={async () => {
+                              console.log("readContracts.LendingAuction.address", readContracts.LendingAuction.address)
+                              console.log("id", id)
+                              const result1 = tx(writeContracts.YourCollectible.approve(
+                                readContracts.LendingAuction.address,
+                                id
+                                ), update => {
+                                console.log("📡 Transaction Update:", update);
+                                if (update && (update.status === "confirmed" || update.status === 1)) {
+                                  console.log(" 🍾 Transaction " + update.hash + " finished!");
+                                  console.log(
+                                    " ⛽️ " +
+                                      update.gasUsed +
+                                      "/" +
+                                      (update.gasLimit || update.gas) +
+                                      " @ " +
+                                      parseFloat(update.gasPrice) / 1000000000 +
+                                      " gwei",
+                                  );
+                                }
+                              });
+                              console.log("awaiting metamask/web3 confirm result...", result1);
+                              console.log(await result1);
+                            }}
+                          >
+                            Approve NFT for loan
+                          </Button>
+                          <br />
                           <Input
                             placeholder="Interest Rate %"
                             onChange={e => {
@@ -169,9 +197,8 @@ export default function YourNFTs({
                           <Button
                             style={{ marginTop: 8 }}
                             onClick={async () => {
-                              /* look how you call setPurpose on your contract: */
-                              /* notice how you pass a call back for tx updates too */
-                              const result = tx(writeContracts.LendingAuction.createLoan(
+
+                              const result2 = tx(writeContracts.LendingAuction.createLoan(
                                 readContracts.YourCollectible.address,
                                 id,
                                 Number(loanInterestRate), 
@@ -192,8 +219,8 @@ export default function YourNFTs({
                                   );
                                 }
                               });
-                              console.log("awaiting metamask/web3 confirm result...", result);
-                              console.log(await result);
+                              console.log("awaiting metamask/web3 confirm result...", result2);
+                              console.log(await result2);
                             }}
                           >
                             Create Loan Ask

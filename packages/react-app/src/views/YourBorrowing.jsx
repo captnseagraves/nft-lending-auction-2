@@ -42,7 +42,7 @@ export default function YourBorrowing({
   blockExplorer
 }) {
   const [yourBorrowingAuctions, setBorrowingAuctions] = useState([]);
-  const [loanUnderwrittenAmount, setLoanUnderwrittenAmount] = useState("");
+  const [loanRepaymentAmount, setLoanRepaymentAmount] = useState("");
 
   const loanUnderwrittenEvents = useEventListener(readContracts, "LendingAuction", "LoanUnderwritten", localProvider, 1);
   console.log("📟 loanUnderwritten events:", loanUnderwrittenEvents);
@@ -180,11 +180,19 @@ export default function YourBorrowing({
                         </Button>
                       </div>
                       <div style={{ margin: 8 }}>
+                      <Input
+                          placeholder="Enter repayment amount in Wei"
+                          onChange={e => {
+                            setLoanRepaymentAmount(e.target.value);
+                          }}
+                        />
+                        <br />
                         <Button
                           style={{ marginTop: 8 }}
                           onClick={async () => {
                             const result = tx(writeContracts.LendingAuction.repayLoan(
-                                item.loanId
+                                item.loanId, 
+                                { value: loanRepaymentAmount }
                               ), update => {
                               console.log("📡 Transaction Update:", update);
                               if (update && (update.status === "confirmed" || update.status === 1)) {
