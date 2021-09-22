@@ -21,6 +21,7 @@
 - refactor contract and frontend to rely on events and refactor
 - spice up the frontend
 - write contract tests
+- create emails for actions
 - write frontend tests
 - integrate and deploy on Rinkeby
 - integrate and deploy on mainnet

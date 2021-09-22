@@ -83,7 +83,7 @@ export default function OpenAuctions({
                   lender: loanAtIndex.lender,
                   loanAmount: String(loanAtIndex.loanAmount),
                   loanAmountDrawn: String(loanAtIndex.loanAmountDrawn),
-                  loanCompleteTime: String(loanAtIndex.loanCompleteTime),
+                  loanCompleteTime: Number(loanAtIndex.loanCompleteTime),
                   maxLoanAmount: String(loanAtIndex.maxLoanAmount),
                   tokenMetadata: { ...jsonManifest }
                 });
@@ -112,6 +112,12 @@ export default function OpenAuctions({
                 dataSource={openLoanAuctions}
                 renderItem={item => {
                   const id = item.loanId;
+                  let firstBidTime = moment.unix(item.firstBidTime);
+                  let lastBidTime = moment.unix(item.lastBidTime);
+                  let loanCompleteTime = moment.unix(item.loanCompleteTime);
+                  let nowNow = moment(now()).unix();
+                  console.log("loanCompletTime", loanCompleteTime);
+                  console.log("nowNow", typeof nowNow)
                   return (
                     <List.Item key={item.loanId + "_" + item.tokenAddress}>
                       <Card
@@ -128,24 +134,51 @@ export default function OpenAuctions({
                       </Card>
 
                       <div>
-                        <div>loan ID: {item.loanId}</div>
-                        <div>Token address: {item.tokenAddress}</div>
-                        <div>Time of first bid: {item.firstBidTime}</div>
-                        <div>Time of last bid: {item.lastBidTime}</div>
+                        <div> 
+                          {item.firstBidTime == 0 ? 
+                          <div>
+                            <b>This lending auction has no bids yet</b>
+                            <br />
+                          </div>
+                             : 
+                            <div>
+                              <div>"Time of first bid:" + firstBidTime.format("dddd, MMMM Do YYYY, h:mm:ss a")</div>
+                              <div>"Time of last bid:" + lastBidTime.format("dddd, MMMM Do YYYY, h:mm:ss a")</div>
+                            </div>
+                          }
+                        </div>
+                        
                         <div>Total historic interest: {item.historicInterest}</div>
-                        <div>Current Interest Rate: {item.interestRate}</div>
-                        <div>Lender: {" "}
-                          <Address
-                              address={item.lender}
-                              ensProvider={mainnetProvider}
-                              blockExplorer={blockExplorer}
-                              fontSize={16}
+                        <div>Current Interest Rate: {item.interestRate}%</div>
+                        <div> 
+                          {item.lender == 0x0000000000000000000000000000000000000000 ? 
+                            <div></div> : 
+                            <div>Lender: {" "}
+                            <Address
+                                address={item.lender}
+                                ensProvider={mainnetProvider}
+                                blockExplorer={blockExplorer}
+                                fontSize={16}
                             />
                         </div>
-                        <div>Max Loan Amount: {item.maxLoanAmount}</div>
-                        <div>Current max bid: {item.loanAmount}</div>
-                        <div>Loan amount drawn: {item.loanAmountDrawn}</div>
-                        <div>Loan ends at: {item.loanCompleteTime}</div>
+                          }
+                        </div>
+                        
+                        <div>Max Loan Ask: {item.maxLoanAmount}</div>
+                        <div> 
+                          {item.loanAmount == 0 ? 
+                            <div></div> : 
+                            <div>Current max bid: {item.loanAmount}</div>
+                          }
+                        </div>
+                        
+                        <div>Minimum bid required: {Number(item.loanAmountDrawn) + 1}</div>
+                        <div>
+                          This lending auction ends at: 
+                          <br />
+                          {console.log("item.loanCompleteTime", item.loanCompleteTime)}
+                          <b>{loanCompleteTime.format("dddd, MMMM Do YYYY, h:mm:ss a")}</b>
+                        </div>
                         Token owner:{" "}
                           <Address
                             address={item.tokenOwner}
