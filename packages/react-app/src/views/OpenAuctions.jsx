@@ -6,6 +6,8 @@ import { Button, Card, DatePicker, Divider, Input, List, Progress, Slider, Spin,
 import React, { useState, useEffect } from "react";
 import { Address, Balance, AddressInput } from "../components";
 import { useEventListener } from "../hooks";
+import { now } from "moment";
+import moment from 'moment';
 
 const { BufferList } = require("bl");
 // https://www.npmjs.com/package/ipfs-http-client
@@ -57,37 +59,39 @@ export default function OpenAuctions({
         try {
           console.log("Getting loan at index", loanEventIndex);
           const loanAtIndex = await readContracts.LendingAuction.loans(loanEventIndex);
-          try {
-            console.log("fetching NFT details");
-            const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);
-            const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
-            const jsonManifestBuffer = await getFromIPFS(ipfsHash);
-            const jsonManifest = JSON.parse(jsonManifestBuffer.toString());
-            console.log("jsonManifest", jsonManifest)
-            try {
-              console.log("adding loan and NFT details to state update");
-              openLoanAuctionsUpdate.push({
-                loanId: String(loanAtIndex.loanId), 
-                tokenAddress: loanAtIndex.tokenAddress,
-                tokenId: String(loanAtIndex.tokenId),
-                tokenOwner: loanAtIndex.tokenOwner,
-                tokenURI: tokenURI,
-                firstBidTime: String(loanAtIndex.firstBidTime),
-                historicInterest: String(loanAtIndex.historicInterest),
-                interestRate: String(loanAtIndex.interestRate),
-                lastBidTime: String(loanAtIndex.lastBidTime),
-                lender: loanAtIndex.lender,
-                loanAmount: String(loanAtIndex.loanAmount),
-                loanAmountDrawn: String(loanAtIndex.loanAmountDrawn),
-                loanCompleteTime: String(loanAtIndex.loanCompleteTime),
-                maxLoanAmount: String(loanAtIndex.maxLoanAmount),
-                tokenMetadata: { ...jsonManifest }
-              });
+          if(loanAtIndex.tokenOwner != 0x0000000000000000000000000000000000000000 && Number(loanAtIndex.loanCompleteTime) > moment(now()).unix()){
+            try { 
+              console.log("fetching NFT details");
+              const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);
+              const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
+              const jsonManifestBuffer = await getFromIPFS(ipfsHash);
+              const jsonManifest = JSON.parse(jsonManifestBuffer.toString());
+              console.log("jsonManifest", jsonManifest)
+              try {
+                console.log("adding loan and NFT details to state update");
+                openLoanAuctionsUpdate.push({
+                  loanId: String(loanAtIndex.loanId), 
+                  tokenAddress: loanAtIndex.tokenAddress,
+                  tokenId: String(loanAtIndex.tokenId),
+                  tokenOwner: loanAtIndex.tokenOwner,
+                  tokenURI: tokenURI,
+                  firstBidTime: String(loanAtIndex.firstBidTime),
+                  historicInterest: String(loanAtIndex.historicInterest),
+                  interestRate: String(loanAtIndex.interestRate),
+                  lastBidTime: String(loanAtIndex.lastBidTime),
+                  lender: loanAtIndex.lender,
+                  loanAmount: String(loanAtIndex.loanAmount),
+                  loanAmountDrawn: String(loanAtIndex.loanAmountDrawn),
+                  loanCompleteTime: String(loanAtIndex.loanCompleteTime),
+                  maxLoanAmount: String(loanAtIndex.maxLoanAmount),
+                  tokenMetadata: { ...jsonManifest }
+                });
+              } catch (e) {
+                console.log(e);
+              }
             } catch (e) {
               console.log(e);
             }
-          } catch (e) {
-            console.log(e);
           }
         } catch (e) {
           console.log(e);

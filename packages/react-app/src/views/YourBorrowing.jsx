@@ -55,7 +55,7 @@ export default function YourBorrowing({
         try {
           console.log("Getting loan at index", loanEventIndex);
           const loanAtIndex = await readContracts.LendingAuction.loans(loanEventIndex);
-          if (loanAtIndex.tokenOwner == address) {
+          if (loanAtIndex.tokenOwner == address && loanAtIndex.loanCompleteTime) {
             try {
               console.log("fetching NFT details");
               const tokenURI = await readContracts.YourCollectible.tokenURI(loanAtIndex.tokenId);

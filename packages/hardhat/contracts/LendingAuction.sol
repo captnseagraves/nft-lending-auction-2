@@ -82,6 +82,8 @@ contract LendingAuction{
    * @return Loan id
    */
 
+// should require a minimum loan amount instead of maximum, interest will be paid on amount drawn down
+// should have a bid system that allows lenders to bid below and above minimum and requires an acceptance by the borrower
     function createLoan(
         address _tokenAddress,
         uint256 _tokenId,
@@ -245,6 +247,8 @@ contract LendingAuction{
    * Enables NFT owner to draw capital from top bid
    * @param _loanId id of loan to draw from
    */
+
+  //  should be able to specify amount to withdraw
   function drawLoan(uint256 _loanId) external {
     Loan storage loan = loans[_loanId];
     // Prevent non-loan-owner from drawing
@@ -268,6 +272,9 @@ contract LendingAuction{
    * Enables anyone to repay a loan on behalf of owner
    * @param _loanId id of loan to repay
    */
+
+   // should be able to repay loan if auction is still open and NFT is not seized. 
+  //  should be able to repay on a block by block, by minute, hourly, daily, weekly, monthly, schedule. 
   function repayLoan(uint256 _loanId) external payable {
     Loan storage loan = loans[_loanId];
     // Prevent repaying repaid loan
@@ -325,6 +332,8 @@ contract LendingAuction{
    * Enables anyone to seize NFT, for lender, on loan default
    * @param _loanId id of loan to seize collateral
    */
+
+  //  should be close the auction when an NFT is seized
   function seizeNFT(uint256 _loanId) external {
     Loan memory loan = loans[_loanId];
     // Enforce loan is unpaid

@@ -10,6 +10,11 @@
 - reset loan amount drawn or document repayment amounts to be reflected in frontend
     - display what has been borrowed, how much interest has accumulated, what is owed, what has been paid.
 - create loan interest amortization chart.
+- create loan history
+- remove loans from open auctions when repaid
+- remove loan from your borrowing and your lending when repaid or cancelled
+- Integrate "create a lending auction" and open auctions with OpenSea
+- Write better error handling for each contract call
 
 - refactor contract for better UX. 
 - Extend contract to handle any NFT contract
